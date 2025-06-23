@@ -12,46 +12,58 @@ public class Main {
     public static void main(String[] args) {
         TaskManager manager = Managers.getDefault();
 
-        // Задачи
-        manager.addTask(new Task("First data.model.Task", "OK", Task.Status.NEW));
-        manager.addTask(new Task("Second data.model.Task", "OK", Task.Status.NEW));
+        System.out.println("1. Создаем задачи и эпики:");
+        // Создаем две задачи
+        manager.addTask(new Task("Задача 1", "Описание 1", Task.Status.NEW));
+        manager.addTask(new Task("Задача 2", "Описание 2", Task.Status.NEW));
 
-        // Эпики и подзадачи
-        manager.addEpic(new Epic("First data.model.Epic", "OK", Task.Status.NEW));
-        manager.addSubtask(new Subtask(3, "First data.model.Subtask", "OK", Task.Status.NEW));
-        manager.addSubtask(new Subtask(3, "Second data.model.Subtask", "OK", Task.Status.NEW));
+        // Создаем эпик с тремя подзадачами
+        manager.addEpic(new Epic("Эпик 1", "Описание эпика 1", Task.Status.NEW));
+        manager.addSubtask(new Subtask(3, "Подзадача 1", "Описание 1", Task.Status.NEW));
+        manager.addSubtask(new Subtask(3, "Подзадача 2", "Описание 2", Task.Status.NEW));
+        manager.addSubtask(new Subtask(3, "Подзадача 3", "Описание 3", Task.Status.NEW));
 
-        manager.addEpic(new Epic("Second data.model.Epic", "OK", Task.Status.NEW));
-        manager.addSubtask(new Subtask(6, "First data.model.Subtask", "OK", Task.Status.NEW));
+        // Создаем эпик без подзадач
+        manager.addEpic(new Epic("Эпик 2", "Описание эпика 2", Task.Status.NEW));
 
-        // Списки
         printLists(manager);
-
-        // Смена статусов
-        manager.updateTask(new Task(1, "First data.model.Task", "OK", Task.Status.DONE));
-        manager.updateTask(new Task(2, "Second data.model.Task", "OK", Task.Status.DONE));
-        manager.updateSubtask(new Subtask(4, 3, "First data.model.Subtask", "OK", Task.Status.DONE));
-        manager.updateSubtask(new Subtask(7, 6, "First data.model.Subtask", "OK", Task.Status.DONE));
-
-        // Обновленные списки
-        System.out.println("\nПосле обновления статуса:");
-        printLists(manager);
-
-        // Удаление одной задачу и одного эпик
-        manager.removeTaskById(1);
-        manager.removeSubtaskById(7);
-        manager.removeEpicById(3);
-
-        // Финальные списки
-        System.out.println("\nПосле удаления:");
-        printLists(manager);
-
-        manager.getTask(1);
-        manager.getTask(2);
-        manager.getEpic(3);
-
-        System.out.println("\nИстория:");
+        System.out.println("\nТекущая история (должна быть пустой):");
         printHistory(manager.getHistory());
+
+        System.out.println("\n2. Запрашиваем задачи в разном порядке:");
+        // Запрашиваем задачи в разном порядке
+        manager.getTask(1);
+        manager.getEpic(3);
+        manager.getSubtask(4);
+        manager.getTask(2);
+        manager.getSubtask(5);
+        manager.getEpic(6);
+        manager.getSubtask(6);
+        manager.getSubtask(7); // Несуществующая подзадача (не должна добавиться)
+
+        System.out.println("\nИстория после первого запроса:");
+        printHistory(manager.getHistory());
+
+        System.out.println("\n3. Запрашиваем некоторые задачи повторно:");
+        manager.getEpic(3);
+        manager.getTask(1);
+        manager.getSubtask(4);
+
+        System.out.println("\nИстория после повторных запросов (должна обновиться без дубликатов):");
+        printHistory(manager.getHistory());
+
+        System.out.println("\n4. Удаляем задачу 2, которая есть в истории:");
+        manager.removeTaskById(2);
+        System.out.println("\nИстория после удаления задачи 2:");
+        printHistory(manager.getHistory());
+
+        System.out.println("\n5. Удаляем эпик 3 с подзадачами:");
+        manager.removeEpicById(3);
+        System.out.println("\nИстория после удаления эпика 3:");
+        printHistory(manager.getHistory());
+
+        System.out.println("\n6. Финальное состояние всех задач:");
+        printLists(manager);
     }
 
     private static void printLists(TaskManager manager) {
